@@ -8,25 +8,44 @@ from utilities import getCsvDataQuery
 def main():
     args = sys.argv[1:]
     func = args[0]
+    sql_file_path = 'cs122a_db.sql'
 
-    run_initialization()
-    connection = mysql.connector.connect(user=Constants.USER, password=Constants.PASSWORD, database=Constants.DATABASE)
-    cursor = connection.cursor()
+    db_connection = mysql.connector.connect(user=Constants.USER, password=Constants.PASSWORD, database=Constants.DATABASE)
 
     if (func == "import"):
-        cursor.execute(getCsvDataQuery("test_data/users.csv"))
-        # cursor.execute(getCsvDataQuery("test_data/emails.csv"))
-        cursor.execute(getCsvDataQuery("test_data/students.csv"))
-        cursor.execute(getCsvDataQuery("test_data/admins.csv"))
-        cursor.execute(getCsvDataQuery("test_data/courses.csv"))
-        cursor.execute(getCsvDataQuery("test_data/projects.csv"))
-        cursor.execute(getCsvDataQuery("test_data/machines.csv"))
-        cursor.execute(getCsvDataQuery("test_data/use.csv"))
-        cursor.execute(getCsvDataQuery("test_data/manage.csv"))
-        result = cursor.fetchall()
 
-        print(result)
+        try:
+            cursor = db_connection.cursor()
+            print("Successfully connected to the database")
+            print("Initialization begin")
 
+            with open(sql_file_path, 'r') as file:
+                sql_script = file.read()
+
+            for statement in sql_script.split(';'):
+                if statement.strip():
+                    print("running: ", statement)
+                    cursor.execute(statement)
+            
+            cursor.execute(getCsvDataQuery("test_data/users.csv"))
+            cursor.execute(getCsvDataQuery("test_data/students.csv"))
+            cursor.execute(getCsvDataQuery("test_data/admins.csv"))        
+            cursor.execute(getCsvDataQuery("test_data/courses.csv"))
+            cursor.execute(getCsvDataQuery("test_data/projects.csv"))
+            cursor.execute(getCsvDataQuery("test_data/machines.csv"))
+            cursor.execute(getCsvDataQuery("test_data/emails.csv"))
+            cursor.execute(getCsvDataQuery("test_data/use.csv"))
+            cursor.execute(getCsvDataQuery("test_data/manage.csv"))
+            result = cursor.fetchall()
+
+            print(result)
+
+            db_connection.commit()
+            print("Initialization end successfully")
+
+        except mysql.connector.Error as error:
+            print(f"Failed to execute SQL script: {error}")
+            
     elif (func == "insertStudent"):
         print(func)
     elif (func == "addEmail"):
@@ -50,8 +69,10 @@ def main():
     elif (func == "machineUsage"):
         print(func)
 
-    cursor.close()
-    connection.close()
+    if db_connection.is_connected():
+        cursor.close()
+        db_connection.close()
+        print("MySQL connection is closed")
 
     return 0
 

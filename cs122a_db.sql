@@ -35,7 +35,7 @@ CREATE TABLE Administrators (
 
 -- Course Table
 CREATE TABLE Courses (
-    CourseID INT PRIMARY KEY NOT NULL,
+    CourseID INT PRIMARY KEY NOT NULL ,
     Title VARCHAR(100),
     Quarter VARCHAR(20)
 );
