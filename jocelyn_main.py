@@ -50,7 +50,6 @@ def activeStudent(argv): # task 11
             s.UCINetID = u.UCINetID and 
             u.MachineID = argv[2] and
             u.MachineID = m.MachineID and
-            m.OperationalStatus = 'active' and
             u.StartDate <= argv[4] and u.EndDate >= argv[5]
             
         GROUP BY
