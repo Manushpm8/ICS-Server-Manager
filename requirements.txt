@@ -1,0 +1,4 @@
+gradescope-utils==0.5.0
+mysql-connector-python==8.2.0
+protobuf==4.21.12
+subprocess32==3.5.4
