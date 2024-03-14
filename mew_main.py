@@ -1,9 +1,30 @@
 import sys
-import csv
-import os
+
+def execute_command(db_connection, sql_command):
+    '''
+    Executes sql command in connection.
+
+    :return: Bool, optional results
+    '''
+    try:
+        cursor = db_connection.cursor()
+        print("Successfully connected to the database")
+        print("Initialization begin")
+
+        cursor.execute(sql_command)
+        result = cursor.fetchall()
+
+        print(result)
+
+        db_connection.commit()
+        print("Initialization end successfully")
+        return True, result
+    except Exception as e:
+        print(e)
+        return False
 
 
-def addEmail(argv):  # task 3
+def addEmail(db_connection, argv):  # task 3
     '''
     Add email to a user
 
@@ -11,22 +32,19 @@ def addEmail(argv):  # task 3
     return: bool
     '''
 
-    # try:
-        # cursor.execute() except: return False
-
     sql_command = """
-            INSERT INTO users (UCINetID, email)
-            VALUES (argv[2], argv[3]);
-        """
+                INSERT INTO users (UCINetID, email)
+                VALUES (argv[2], argv[3]);
+            """
+    res = execute_command(db_connection, sql_command)
+    print(res[0])
 
-    return True
 
-
-def insertUse(argv):  # task 6
+def insertUse(db_connection, argv):  # task 6
     '''
     Insert a new use record for student use machine for project.
 
-    :param argv: ProjID, UCINetID, MachineID, start, end
+    argv: ProjID, UCINetID, MachineID, start, end
     ex: 2005 testID 102 2023-01-09 2023-03-10
     :return: Bool
     '''
@@ -34,15 +52,16 @@ def insertUse(argv):  # task 6
             INSERT INTO use (ProjID, UCINetID, MachineID, start, end)
             VALUES (argv[2], argv[3], argv[4], argv[5], argv[6])
         """
-    return True
+    res = execute_command(db_connection, sql_command)
+    print(res[0])
 
 
-def popularCourse(argv):  # task 9
+def popularCourse(db_connection, argv):  # task 9
     '''
     List the top N course that has the most students attended.
     Ordered by studentCount, courseID descending.
 
-    :param argv: N
+    argv: N
     :return: Table - CourseId,title,studentCount
     '''
     sql_command = """
@@ -52,16 +71,20 @@ def popularCourse(argv):  # task 9
         LIMIT argv[2];
         """
 
+    res = execute_command(db_connection, sql_command)
+    print(res[1])
 
-def machineUsage(argv):  # task 12
+
+def machineUsage(db_connection, argv):  # task 12
     '''
     Given a course id, count the number of usage of each machine in that course.  Each unique
     record in the MachineUse table counts as one usage. Machines that are not used in the course
     should have a count of 0 instead of NULL. Ordered by machineId descending.
 
-    :param argv: machineId
+    argv: machineId
     :return: Table - machineID,hostname,ipAddr,count
     '''
+
     sql_command = """
             SELECT M.machineID, M.hostname, M.ipAddr, IF(M.useCount = NULL, 0, M.useCount)
             FROM (SELECT COUNT(DISTINCT *) as useCount
@@ -69,8 +92,10 @@ def machineUsage(argv):  # task 12
                 GROUP BY U.machineID
             ), machine as M
             ORDER BY M.MachineID DESC   
-            LIMIT argv[2];
         """
+
+    res = execute_command(db_connection, sql_command)
+    print(res[1])
 
 
 

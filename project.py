@@ -1,6 +1,8 @@
 import sys
 from constants import Constants
 import mysql.connector
+from mew_main import *
+from jocelyn_main import *
 
 from run_initialization import run_initialization
 from utilities import getCsvDataQuery
@@ -45,29 +47,11 @@ def main():
 
         except mysql.connector.Error as error:
             print(f"Failed to execute SQL script: {error}")
+            print('False')
             
-    elif (func == "insertStudent"):
-        print(func)
-    elif (func == "addEmail"):
-        print(func)
-    elif (func == "deleteStudent"):
-        print(func)
-    elif (func == "insertMachine"):
-        print(func)
-    elif (func == "insertUse"):
-        print(func)
-    elif (func == "updateCourse"):
-        print(func)
-    elif (func == "listCourse"):
-        print(func)
-    elif (func == "popularCourse"):
-        print(func)
-    elif (func == "adminEmails"):
-        print(func)
-    elif (func == "activeStudent"):
-        print(func)
-    elif (func == "machineUsage"):
-        print(func)
+    else:
+        function_selected = globals()[sys.argv[1]]
+        function_selected(db_connection, sys.argv)
 
     if db_connection.is_connected():
         cursor.close()
