@@ -1,29 +1,7 @@
 import sys
+from mew_main import execute_command, printRows
 
-def execute_command(db_connection, sql_command):
-    '''
-    Executes sql command in connection.
-
-    :return: Bool, optional results
-    '''
-    try:
-        cursor = db_connection.cursor()
-        print("Successfully connected to the database")
-        print("Initialization begin")
-
-        cursor.execute(sql_command)
-        result = cursor.fetchall()
-
-        print(result)
-
-        db_connection.commit()
-        print("Initialization end successfully")
-        return True, result
-    except Exception as e:
-        print(e)
-        return False
-
-def insertStudent(argv): #task 2
+def insertStudent(db_connection, argv): #task 2
     '''
     Insert a new student into the related tables.
 
@@ -42,7 +20,7 @@ def insertStudent(argv): #task 2
     res = execute_command(db_connection, sql_command)
     print(res[0])
 
-def insertMachine(argv): #task 5
+def insertMachine(db_connection, argv): #task 5
     '''
     Insert a new machine.
 
@@ -59,7 +37,7 @@ def insertMachine(argv): #task 5
     res = execute_command(db_connection, sql_command)
     print(res[0])
 
-def listCourse(argv): # task 8
+def listCourse(db_connection, argv): # task 8
     '''
     Given a student ID, list all unique courses the student attended. Ordered by courseId ascending.
 
@@ -86,9 +64,9 @@ def listCourse(argv): # task 8
     """
 
     res = execute_command(db_connection, sql_command)
-    print(res[1])
+    printRows(res)
 
-def activeStudent(argv): # task 11
+def activeStudent(db_connection, argv): # task 11
     '''
     Given a machine Id, find all active students that used it more than N times (including N) in a 
     specific time range (including start and end date). Ordered by netid ascending. N will be at least 1.
@@ -120,7 +98,7 @@ def activeStudent(argv): # task 11
     """
 
     res = execute_command(db_connection, sql_command)
-    print(res[1])
+    printRows(res)
 
 if __name__ == "__main__":
     #argv[0] = project.py

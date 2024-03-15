@@ -14,26 +14,36 @@ def execute_command(db_connection, sql_command):
         cursor.execute(sql_command)
         result = cursor.fetchall()
 
-        print(result)
+        # print(result)
 
         db_connection.commit()
         print("Initialization end successfully")
-        return True, result
+        return 'Success', result
     except Exception as e:
         print(e)
-        return False
+        return 'Fail'
+
+def printRows(result):
+    '''
+    Formats result printing from table to csv
+
+    - arg: result table
+    - returns:  None
+    '''
+    for row in result:
+        print(','.join(row.split()))
 
 
 def addEmail(db_connection, argv):  # task 3
     '''
-    Add email to a user
+    Add email to a user email table.
 
     argv - UCINetID, email
     return: bool
     '''
 
     sql_command = """
-                INSERT INTO users (UCINetID, email)
+                INSERT INTO UserEmail (UCINetID, email)
                 VALUES (argv[2], argv[3]);
             """
     res = execute_command(db_connection, sql_command)
@@ -49,8 +59,9 @@ def insertUse(db_connection, argv):  # task 6
     :return: Bool
     '''
     sql_command = """
-            INSERT INTO use (ProjID, UCINetID, MachineID, start, end)
-            VALUES (argv[2], argv[3], argv[4], argv[5], argv[6])
+            INSERT INTO StudentUseMachinesInProject
+                (ProjectID, StudentUCINetID, MachineID, StartDate, EndDate)
+            VALUES (argv[2], argv[3], argv[4], DATE(argv[5]), DATE(argv[6]))
         """
     res = execute_command(db_connection, sql_command)
     print(res[0])
@@ -65,14 +76,17 @@ def popularCourse(db_connection, argv):  # task 9
     :return: Table - CourseId,title,studentCount
     '''
     sql_command = """
-        SELECT CourseID, Title, COUNT(DISTINCT students) AS studentCount
-        FROM courses
-        ORDER BY studentCount, courseID DESC
+        SELECT C.CourseID, C.Title, COUNT( DISTINCT S.UCINetID) AS studentCount
+        FROM Courses as C
+        JOIN Projects as P ON P.CourseID = C.CourseID
+        JOIN StudentUseMachinesInProject as S ON S.ProjectID = P.ProjectID
+        GROUP BY C.CourseID, C.Title
+        ORDER BY studentCount DESC, C.CourseID
         LIMIT argv[2];
         """
 
     res = execute_command(db_connection, sql_command)
-    print(res[1])
+    printRows(res)
 
 
 def machineUsage(db_connection, argv):  # task 12
@@ -86,17 +100,19 @@ def machineUsage(db_connection, argv):  # task 12
     '''
 
     sql_command = """
-            SELECT M.machineID, M.hostname, M.ipAddr, IF(M.useCount = NULL, 0, M.useCount)
-            FROM (SELECT COUNT(DISTINCT *) as useCount
-                FROM use as U
-                GROUP BY U.machineID
-            ), machine as M
-            ORDER BY M.MachineID DESC   
+        SELECT M1.MachineID, M1.Hostname, M1.IPAddress, M1.IFNULL(useCount, 0)
+        FROM
+            (SELECT M.MachineID, M.Hostname, M.IPAddress, COUNT(DISTINCT P.ProjectID) as useCount
+            FROM StudentUseMachinesInProject as U
+            JOIN Machines as M ON MachineID=U.MachineID
+            JOIN Projects as P ON P.ProjectID=U.ProjectID
+            WHERE P.CourseID = argv[2]
+            GROUP BY M.MachineID, M.Hostname, M.IPAddress
+            ORDER BY M.MachineID DESC) as M1;
         """
 
     res = execute_command(db_connection, sql_command)
-    print(res[1])
-
+    printRows(res)
 
 
 if __name__ == "__main__":
