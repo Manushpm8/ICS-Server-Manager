@@ -1,8 +1,8 @@
 import sys
-from utilities import execute_command
+from utilities import execute_command, printRows
 
 
-def deleteStudent(db_connection, argv):  # task 4
+def deleteStudent(db_connection, cursor, argv):  # task 4
     '''
     Delete the student in both the User and Student table.
 
@@ -14,13 +14,12 @@ def deleteStudent(db_connection, argv):  # task 4
                 DELETE FROM users
                 WHERE UCINetID = '{argv[2]}';
             """
-    print(sql_command)
-    res = execute_command(db_connection, sql_command)
-    print(res)
+    
+    res = execute_command(db_connection, cursor, sql_command)
     print(res[0])
 
 
-def updateCourse(db_connection, argv):  # task 7
+def updateCourse(db_connection, cursor, argv):  # task 7
     '''
     Update the title of a course.
 
@@ -32,11 +31,12 @@ def updateCourse(db_connection, argv):  # task 7
                 SET Title = '{argv[3]}'
                 WHERE CourseID = {argv[2]};
             """
-    res = execute_command(db_connection, sql_command)
+
+    res = execute_command(db_connection, cursor, sql_command)
     print(res[0])
 
 
-def adminEmails(db_connection, argv):  # task 10
+def adminEmails(db_connection, cursor, argv):  # task 10
     '''
     Given a machine ID, find all administrators of that machine. List the emails of those administrators. Ordered by netid ascending. 
 
@@ -66,6 +66,6 @@ def adminEmails(db_connection, argv):  # task 10
                     Users.UCINetID ASC;
             """
 
-    res = execute_command(db_connection, sql_command)
-    print(res[1])
+    res = execute_command(db_connection, cursor, sql_command)
+    printRows(res[1])
 

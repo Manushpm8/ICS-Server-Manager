@@ -2,7 +2,7 @@ import sys
 from utilities import execute_command, printRows
 
 
-def addEmail(db_connection, argv):  # task 3
+def addEmail(db_connection, cursor, argv):  # task 3
     '''
     Add email to a user email table.
 
@@ -15,12 +15,12 @@ def addEmail(db_connection, argv):  # task 3
                 VALUES ('{argv[2]}', '{argv[3]}');
             """
     print(sql_command)
-    res = execute_command(db_connection, sql_command)
+    res = execute_command(db_connection, cursor, sql_command)
     print(res)
     print(res[0])
 
 
-def insertUse(db_connection, argv):  # task 6
+def insertUse(db_connection, cursor, argv):  # task 6
     '''
     Insert a new use record for student use machine for project.
 
@@ -33,11 +33,11 @@ def insertUse(db_connection, argv):  # task 6
                 (ProjectID, StudentUCINetID, MachineID, StartDate, EndDate)
             VALUES ({argv[2]}, '{argv[3]}', {argv[4]}, '{argv[5]}', '{argv[6]}')
         """
-    res = execute_command(db_connection, sql_command)
+    res = execute_command(db_connection, cursor, sql_command)
     print(res[0])
 
 
-def popularCourse(db_connection, argv):  # task 9
+def popularCourse(db_connection, cursor, argv):  # task 9
     '''
     List the top N course that has the most students attended.
     Ordered by studentCount, courseID descending.
@@ -55,11 +55,11 @@ def popularCourse(db_connection, argv):  # task 9
         LIMIT {argv[2]};
         """
 
-    res = execute_command(db_connection, sql_command)
+    res = execute_command(db_connection, cursor, sql_command)
     printRows(res)
 
 
-def machineUsage(db_connection, argv):  # task 12
+def machineUsage(db_connection, cursor, argv):  # task 12
     '''
     Given a course id, count the number of usage of each machine in that course.  Each unique
     record in the MachineUse table counts as one usage. Machines that are not used in the course
@@ -81,5 +81,5 @@ def machineUsage(db_connection, argv):  # task 12
             ORDER BY M.MachineID DESC) as M1;
         """
 
-    res = execute_command(db_connection, sql_command)
+    res = execute_command(db_connection, cursor, sql_command)
     printRows(res)

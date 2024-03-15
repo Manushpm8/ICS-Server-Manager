@@ -1,7 +1,7 @@
 import sys
 from utilities import execute_command, printRows
 
-def insertStudent(db_connection, argv): #task 2
+def insertStudent(db_connection, cursor, argv): #task 2
     '''
     Insert a new student into the related tables.
 
@@ -17,10 +17,10 @@ def insertStudent(db_connection, argv): #task 2
         VALUES ('{argv[2]}')
     """
     
-    res = execute_command(db_connection, sql_command)
+    res = execute_command(db_connection, cursor, sql_command)
     print(res[0])
 
-def insertMachine(db_connection, argv): #task 5
+def insertMachine(db_connection, cursor, argv): #task 5
     '''
     Insert a new machine.
 
@@ -33,10 +33,10 @@ def insertMachine(db_connection, argv): #task 5
         VALUES ({argv[2]}, '{argv[3]}', '{argv[4]}', '{argv[5]}')
     """
 
-    res = execute_command(db_connection, sql_command)
+    res = execute_command(db_connection, cursor, sql_command)
     print(res[0])
 
-def listCourse(db_connection, argv): # task 8
+def listCourse(db_connection, cursor, argv): # task 8
     '''
     Given a student ID, list all unique courses the student attended. Ordered by courseId ascending.
 
@@ -62,10 +62,10 @@ def listCourse(db_connection, argv): # task 8
         
     """
 
-    res = execute_command(db_connection, sql_command)
+    res = execute_command(db_connection, cursor, sql_command)
     printRows(res)
 
-def activeStudent(db_connection, argv): # task 11
+def activeStudent(db_connection, cursor, argv): # task 11
     '''
     Given a machine Id, find all active students that used it more than N times (including N) in a 
     specific time range (including start and end date). Ordered by netid ascending. N will be at least 1.
@@ -96,5 +96,5 @@ def activeStudent(db_connection, argv): # task 11
             s.UCINetID ASC 
     """
 
-    res = execute_command(db_connection, sql_command)
+    res = execute_command(db_connection, cursor, sql_command)
     printRows(res)

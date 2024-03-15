@@ -39,28 +39,28 @@ def getCsvDataQuery(file_path):
 
 
 
-def execute_command(db_connection, sql_command):
+def execute_command(db_connection, cursor, sql_command):
     '''
     Executes sql command in connection.
 
     :return: Bool, optional results
     '''
     try:
-        cursor = db_connection.cursor()
-        print("Successfully connected to the database")
-        print("Initialization begin")
+        # print("Successfully connected to the database")
+        # print("Initialization begin")
 
         cursor.execute(sql_command)
-        result = cursor.fetchall()
 
+        result = cursor.fetchall()
         # print(result)
 
         db_connection.commit()
-        print("Initialization end successfully")
-        return 'Success', result
+        # print("Initialization end successfully")
+
+        return "Success", result
     except Exception as e:
         print(e)
-        return 'Fail'
+        return "Fail", []
     
 
 
@@ -71,5 +71,6 @@ def printRows(result):
     - arg: result table
     - returns:  None
     '''
-    for row in result:
-        print(','.join(row.split()))
+    for record in result:
+        formatted_record = ','.join(str(value) for value in record)
+        print(formatted_record)
