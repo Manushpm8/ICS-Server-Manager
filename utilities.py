@@ -53,11 +53,23 @@ def execute_command(db_connection, sql_command):
         cursor.execute(sql_command)
         result = cursor.fetchall()
 
-        print(result)
+        # print(result)
 
         db_connection.commit()
         print("Initialization end successfully")
-        return True, result
+        return 'Success', result
     except Exception as e:
         print(e)
-        return False
+        return 'Fail'
+    
+
+
+def printRows(result):
+    '''
+    Formats result printing from table to csv
+
+    - arg: result table
+    - returns:  None
+    '''
+    for row in result:
+        print(','.join(row.split()))
