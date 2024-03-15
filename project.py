@@ -9,14 +9,14 @@ from run_initialization import run_initialization
 from utilities import getCsvDataQuery
 
 def main():
-    args = sys.argv[1:]
-    func = args[0]
+    args = sys.argv[2:]
+    func = args[1]
     sql_file_path = 'cs122a_db.sql'
 
     db_connection = mysql.connector.connect(user=Constants.USER, password=Constants.PASSWORD, database=Constants.DATABASE)
     cursor = db_connection.cursor()
 
-    if (func == "import"):
+    if func == "import":
 
         try:
             print("Successfully connected to the database")

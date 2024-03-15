@@ -1,5 +1,5 @@
 import sys
-from utilities import execute_command
+from utilities import execute_command, printRows
 
 def insertStudent(db_connection, argv): #task 2
     '''
@@ -63,7 +63,7 @@ def listCourse(db_connection, argv): # task 8
     """
 
     res = execute_command(db_connection, sql_command)
-    print(res[1])
+    printRows(res)
 
 def activeStudent(db_connection, argv): # task 11
     '''
@@ -97,4 +97,4 @@ def activeStudent(db_connection, argv): # task 11
     """
 
     res = execute_command(db_connection, sql_command)
-    print(res[1])
+    printRows(res)
