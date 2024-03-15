@@ -3,6 +3,7 @@ from constants import Constants
 import mysql.connector
 from mew_main import *
 from jocelyn_main import *
+from manush_main import *
 
 from run_initialization import run_initialization
 from utilities import getCsvDataQuery
@@ -13,11 +14,11 @@ def main():
     sql_file_path = 'cs122a_db.sql'
 
     db_connection = mysql.connector.connect(user=Constants.USER, password=Constants.PASSWORD, database=Constants.DATABASE)
+    cursor = db_connection.cursor()
 
     if (func == "import"):
 
         try:
-            cursor = db_connection.cursor()
             print("Successfully connected to the database")
             print("Initialization begin")
 

@@ -1,27 +1,5 @@
 import sys
-
-def execute_command(db_connection, sql_command):
-    '''
-    Executes sql command in connection.
-
-    :return: Bool, optional results
-    '''
-    try:
-        cursor = db_connection.cursor()
-        print("Successfully connected to the database")
-        print("Initialization begin")
-
-        cursor.execute(sql_command)
-        result = cursor.fetchall()
-
-        print(result)
-
-        db_connection.commit()
-        print("Initialization end successfully")
-        return True, result
-    except Exception as e:
-        print(e)
-        return False
+from utilities import execute_command
 
 
 def addEmail(db_connection, argv):  # task 3
@@ -32,11 +10,13 @@ def addEmail(db_connection, argv):  # task 3
     return: bool
     '''
 
-    sql_command = """
+    sql_command = f"""
                 INSERT INTO users (UCINetID, email)
-                VALUES (argv[2], argv[3]);
+                VALUES ('{argv[2]}', '{argv[3]}');
             """
+    print(sql_command)
     res = execute_command(db_connection, sql_command)
+    print(res)
     print(res[0])
 
 
@@ -48,9 +28,9 @@ def insertUse(db_connection, argv):  # task 6
     ex: 2005 testID 102 2023-01-09 2023-03-10
     :return: Bool
     '''
-    sql_command = """
+    sql_command = f"""
             INSERT INTO use (ProjID, UCINetID, MachineID, start, end)
-            VALUES (argv[2], argv[3], argv[4], argv[5], argv[6])
+            VALUES ({argv[2]}, '{argv[3]}', {argv[4]}, '{argv[5]}', '{argv[6]}')
         """
     res = execute_command(db_connection, sql_command)
     print(res[0])
@@ -64,11 +44,11 @@ def popularCourse(db_connection, argv):  # task 9
     argv: N
     :return: Table - CourseId,title,studentCount
     '''
-    sql_command = """
+    sql_command = f"""
         SELECT CourseID, Title, COUNT(DISTINCT students) AS studentCount
         FROM courses
         ORDER BY studentCount, courseID DESC
-        LIMIT argv[2];
+        LIMIT {argv[2]};
         """
 
     res = execute_command(db_connection, sql_command)
@@ -97,12 +77,3 @@ def machineUsage(db_connection, argv):  # task 12
     res = execute_command(db_connection, sql_command)
     print(res[1])
 
-
-
-if __name__ == "__main__":
-    # argv[0] = project.py
-    # argv[1] = <function name>
-
-    if len(sys.argv) > 1:
-        function_name = globals()[sys.argv[1]]
-        function_name(sys.argv)

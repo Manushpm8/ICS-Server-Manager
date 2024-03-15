@@ -36,3 +36,28 @@ def getCsvDataQuery(file_path):
         query = query[:-3] + ";"
     
     return query
+
+
+
+def execute_command(db_connection, sql_command):
+    '''
+    Executes sql command in connection.
+
+    :return: Bool, optional results
+    '''
+    try:
+        cursor = db_connection.cursor()
+        print("Successfully connected to the database")
+        print("Initialization begin")
+
+        cursor.execute(sql_command)
+        result = cursor.fetchall()
+
+        print(result)
+
+        db_connection.commit()
+        print("Initialization end successfully")
+        return True, result
+    except Exception as e:
+        print(e)
+        return False
