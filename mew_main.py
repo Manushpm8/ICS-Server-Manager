@@ -14,9 +14,8 @@ def addEmail(db_connection, cursor, argv):  # task 3
                 INSERT INTO UserEmail (UCINetID, email)
                 VALUES ('{argv[2]}', '{argv[3]}');
             """
-    print(sql_command)
+
     res = execute_command(db_connection, cursor, sql_command)
-    print(res)
     print(res[0])
 
 
@@ -33,6 +32,7 @@ def insertUse(db_connection, cursor, argv):  # task 6
                 (ProjectID, StudentUCINetID, MachineID, StartDate, EndDate)
             VALUES ({argv[2]}, '{argv[3]}', {argv[4]}, '{argv[5]}', '{argv[6]}')
         """
+    
     res = execute_command(db_connection, cursor, sql_command)
     print(res[0])
 
@@ -56,7 +56,7 @@ def popularCourse(db_connection, cursor, argv):  # task 9
         """
 
     res = execute_command(db_connection, cursor, sql_command)
-    printRows(res)
+    printRows(res[1])
 
 
 def machineUsage(db_connection, cursor, argv):  # task 12
@@ -82,4 +82,4 @@ def machineUsage(db_connection, cursor, argv):  # task 12
         """
 
     res = execute_command(db_connection, cursor, sql_command)
-    printRows(res)
+    printRows(res[1])
