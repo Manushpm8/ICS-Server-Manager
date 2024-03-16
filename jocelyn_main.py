@@ -1,7 +1,7 @@
 import sys
-from mew_main import execute_command, printRows
+from utilities import execute_command, printRows
 
-def insertStudent(db_connection, argv): #task 2
+def insertStudent(db_connection, cursor, argv): #task 2
     '''
     Insert a new student into the related tables.
 
@@ -9,18 +9,18 @@ def insertStudent(db_connection, argv): #task 2
     return: bool
     '''
 
-    sql_command = """
+    sql_command = f"""
         INSERT INTO User (UCINetID, email, First, Middle, Last)
-        VALUES (argv[2], argv[3], argv[4], argv[5], argv[6])
+        VALUES ('{argv[2]}', '{argv[3]}', '{argv[4]}', '{argv[5]}', '{argv[6]}')
 
         INSERT INTO Student (UCINetID)
-        VALUES (argv[2])
+        VALUES ('{argv[2]}')
     """
     
-    res = execute_command(db_connection, sql_command)
+    res = execute_command(db_connection, cursor, sql_command)
     print(res[0])
 
-def insertMachine(db_connection, argv): #task 5
+def insertMachine(db_connection, cursor, argv): #task 5
     '''
     Insert a new machine.
 
@@ -28,16 +28,15 @@ def insertMachine(db_connection, argv): #task 5
     return: bool
     '''
     
-    sql_command = """
+    sql_command = f"""
         INSERT INTO Machine (MachineID, hostname, IPAddr, status)
-        VALUES (argv[2], argv[3], argv[4], argv[5])
-
+        VALUES ({argv[2]}, '{argv[3]}', '{argv[4]}', '{argv[5]}')
     """
 
-    res = execute_command(db_connection, sql_command)
+    res = execute_command(db_connection, cursor, sql_command)
     print(res[0])
 
-def listCourse(db_connection, argv): # task 8
+def listCourse(db_connection, cursor, argv): # task 8
     '''
     Given a student ID, list all unique courses the student attended. Ordered by courseId ascending.
 
@@ -45,7 +44,7 @@ def listCourse(db_connection, argv): # task 8
     return: Table - CourseId,title,quarter
     '''
     
-    sql_command = """
+    sql_command = f"""
         SELECT DISTINCT
             c.CourseID, c.*
             
@@ -53,7 +52,7 @@ def listCourse(db_connection, argv): # task 8
             Student s, StudentUse u, Project p, Course c
             
         WHERE
-            s.UCINetID = argv[2] and
+            s.UCINetID = '{argv[2]}' and
             s.UCINetID = u.UCINetID and
             u.ProjectID = p.ProjectID and
             p.CourseID = c.CourseID
@@ -63,10 +62,10 @@ def listCourse(db_connection, argv): # task 8
         
     """
 
-    res = execute_command(db_connection, sql_command)
-    printRows(res)
+    res = execute_command(db_connection, cursor, sql_command)
+    printRows(res[1])
 
-def activeStudent(db_connection, argv): # task 11
+def activeStudent(db_connection, cursor, argv): # task 11
     '''
     Given a machine Id, find all active students that used it more than N times (including N) in a 
     specific time range (including start and end date). Ordered by netid ascending. N will be at least 1.
@@ -75,7 +74,7 @@ def activeStudent(db_connection, argv): # task 11
     return: Table - UCINetId,first name,middle name,last name
     '''
     
-    sql_command = """
+    sql_command = f"""
         SELECT
             s.UCINetID, s.*
 
@@ -83,27 +82,19 @@ def activeStudent(db_connection, argv): # task 11
         
         WHERE
             s.UCINetID = u.UCINetID and 
-            u.MachineID = argv[2] and
+            u.MachineID = {argv[2]} and
             u.MachineID = m.MachineID and
-            u.StartDate <= argv[4] and u.EndDate >= argv[5]
+            u.StartDate <= '{argv[4]}' and u.EndDate >= '{argv[5]}'
             
         GROUP BY
             s.UCINetID
             
         HAVING
-            COUNT(*) > argv[3]
+            COUNT(*) > {argv[3]}
             
         ORDER BY
             s.UCINetID ASC 
     """
 
-    res = execute_command(db_connection, sql_command)
-    printRows(res)
-
-if __name__ == "__main__":
-    #argv[0] = project.py
-    #argv[1] = <function name>
-
-    if len(sys.argv) >= 2:
-        function_name = globals()[sys.argv[1]]
-        function_name(sys.argv)
+    res = execute_command(db_connection, cursor, sql_command)
+    printRows(res[1])
