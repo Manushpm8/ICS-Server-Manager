@@ -1,9 +1,11 @@
 class Constants:
     
-    USER = "root"
+    USER = "test"
     
-    PASSWORD = "Manusara_15"
+    PASSWORD = "password"
     
-    DATABASE = "cs122a_final"
+    DATABASE = "cs122a"
+
+
     
     

@@ -65,7 +65,7 @@ def machineUsage(db_connection, cursor, argv):  # task 12
     record in the MachineUse table counts as one usage. Machines that are not used in the course
     should have a count of 0 instead of NULL. Ordered by machineId descending.
 
-    argv: machineId
+    argv: courseID
     :return: Table - machineID,hostname,ipAddr,count
     '''
 
