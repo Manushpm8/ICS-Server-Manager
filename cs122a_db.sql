@@ -1,4 +1,3 @@
-
 DROP DATABASE IF EXISTS cs122a_final;
 CREATE DATABASE cs122a_final;
 USE cs122a_final;

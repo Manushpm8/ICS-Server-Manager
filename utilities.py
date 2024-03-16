@@ -4,27 +4,27 @@ import csv
 def getCsvDataQuery(file_path):
     query = "INSERT INTO"
     if ('admins.csv' in file_path):
-        query += " `Administrators` "
+        query += " Administrators "
     elif ('courses.csv' in file_path):
-        query += " `Courses` "
+        query += " Courses "
     elif ('emails.csv' in file_path):
-        query += " `UserEmail` "
+        query += " UserEmail "
     elif ('machines.csv' in file_path):
-        query += " `Machines` "
+        query += " Machines "
     elif ('manage.csv' in file_path):
-        query += " `AdministratorManageMachines` "
+        query += " AdministratorManageMachines "
     elif ('projects.csv' in file_path):
-        query += " `Projects` "
+        query += " Projects "
     elif ('students.csv' in file_path):
-        query += " `Students` "
+        query += " Students "
     elif ('use.csv' in file_path):
-        query += " `StudentUseMachinesInProject` "
+        query += " StudentUseMachinesInProject "
     elif ('users.csv' in file_path):
-        query += " `Users` "
+        query += " Users "
     
     query += "VALUES \n"
 
-    with open(file_path, mode='r') as file:
+    with open(file_path, 'r') as file:
         csv_reader = csv.reader(file)
 
         for line in csv_reader:
