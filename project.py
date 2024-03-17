@@ -59,8 +59,12 @@ def main():
             print('False')
             
     else:
-        function_selected = globals()[sys.argv[1]]
-        function_selected(db_connection, cursor, sys.argv)
+        try:
+            function_selected = globals()[sys.argv[1]]
+            function_selected(db_connection, cursor, sys.argv)
+        except mysql.connector.Error as error:
+            print(f"Failed to execute SQL script: {error}")
+            print('False')
 
     if db_connection.is_connected():
         cursor.close()
