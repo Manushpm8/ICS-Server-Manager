@@ -46,7 +46,7 @@ def popularCourse(db_connection, cursor, argv):  # task 9
     :return: Table - CourseId,title,studentCount
     '''
     sql_command = f"""
-        SELECT C.CourseID, C.Title, COUNT( DISTINCT S.UCINetID) AS studentCount
+        SELECT C.CourseID, C.Title, COUNT( DISTINCT S.StudentUCINetID) AS studentCount
         FROM Courses as C
         JOIN Projects as P ON P.CourseID = C.CourseID
         JOIN StudentUseMachinesInProject as S ON S.ProjectID = P.ProjectID
@@ -70,14 +70,14 @@ def machineUsage(db_connection, cursor, argv):  # task 12
     '''
 
     sql_command = f"""
-        SELECT M1.MachineID, M1.Hostname, M1.IPAddress, M1.IFNULL(useCount, 0)
+        SELECT M1.MachineID, M1.Hostname, M1.IPAddress, IFNULL(M1.useCount, 0)
         FROM
-            (SELECT M.MachineID, M.Hostname, M.IPAddress, COUNT(DISTINCT P.ProjectID) as useCount
+            (SELECT M.MachineID, M.Hostname, M.IPAddress, COUNT(M.MachineID) as useCount
             FROM StudentUseMachinesInProject as U
-            JOIN Machines as M ON MachineID=U.MachineID
+            JOIN Machines as M ON M.MachineID=U.MachineID
             JOIN Projects as P ON P.ProjectID=U.ProjectID
             WHERE P.CourseID = {argv[2]}
-            GROUP BY M.MachineID, M.Hostname, M.IPAddress
+            GROUP BY M.MachineID, M.Hostname, M.IPAddress, P.CourseID
             ORDER BY M.MachineID DESC) as M1;
         """
 
