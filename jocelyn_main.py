@@ -21,10 +21,15 @@ def insertStudent(db_connection, cursor, argv): #task 2
         VALUES (?)
     """
     student_data = (argv[2],)
-    
-    res = execute_command(db_connection, cursor, sql_command, user_data)
-    res = execute_command(db_connection, cursor, sql_command, student_data)
-    print(res[0] and res2[0])
+
+    try:
+        res_user = execute_command(db_connection, cursor, sql_command, user_data)
+        res_student = execute_command(db_connection, cursor, sql_command, student_data)
+
+        print(res_user[0] and res_student[0])
+
+    except Exception as e:
+        print(f"Error: {e}")
 
 def insertMachine(db_connection, cursor, argv): #task 5
     '''
