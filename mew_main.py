@@ -70,16 +70,89 @@ def machineUsage(db_connection, cursor, argv):  # task 12
     '''
 
     sql_command = f"""
-        SELECT M1.MachineID, M1.Hostname, M1.IPAddress, IFNULL(M1.useCount, 0)
-        FROM
-            (SELECT M.MachineID, M.Hostname, M.IPAddress, COUNT(M.MachineID) as useCount
+        SELECT M.MachineID, M.Hostname, M.IPAddress, Count(M.MachineID) as useCount
             FROM StudentUseMachinesInProject as U
-            JOIN Machines as M ON M.MachineID=U.MachineID
-            JOIN Projects as P ON P.ProjectID=U.ProjectID
+            LEFT JOIN Machines as M ON M.MachineID=U.MachineID
+            LEFT JOIN Projects as P ON P.ProjectID=U.ProjectID
+            WHERE P.CourseID = {argv[2]}
+            GROUP BY M.MachineID, M.Hostname, M.IPAddress, P.CourseID
+        UNION
+        SELECT M1.MachineID, M1.Hostname, M1.IPAddress, 0
+            FROM Machines as M1
+            WHERE M1.MachineID NOT IN (
+                SELECT M2.MachineID
+                FROM StudentUseMachinesInProject as U2, Machines as M2, Projects as P2
+                WHERE M2.MachineID=U2.MachineID and P2.ProjectID=U2.ProjectID and P2.CourseID = {argv[2]}
+                GROUP BY M2.MachineID, M2.Hostname, M2.IPAddress, P2.CourseID
+            ) 
+        ORDER BY MachineID DESC; 
+        """
+    sql_test_1 = f'''
+    SELECT M.MachineID, M.Hostname, M.IPAddress, IFNULL(Count(M.MachineID), 0) as useCount
+            FROM StudentUseMachinesInProject as U
+            LEFT JOIN Machines as M ON M.MachineID=U.MachineID
+            LEFT JOIN Projects as P ON P.ProjectID=U.ProjectID
+            GROUP BY M.MachineID, M.Hostname, M.IPAddress, P.CourseID
+            ORDER BY M.MachineID DESC
+    '''
+    sql_test_2 = f'''
+    SELECT P.CourseID, M.MachineID, M.Hostname, M.IPAddress, COUNT(*) as useCount
+            FROM StudentUseMachinesInProject as U, Machines as M, Projects as P
+            WHERE M.MachineID=U.MachineID and P.ProjectID=U.ProjectID
+            ORDER BY P.CourseID DESC, M.MachineID
+    '''
+    sql_test_3 = f'''
+    SELECT M1.MachineID, M1.Hostname, M1.IPAddress
+        FROM
+            (SELECT M.MachineID, M.Hostname, M.IPAddress, IFNULL(Count(M.MachineID), 0) as useCount
+            FROM StudentUseMachinesInProject as U
+            LEFT JOIN Machines as M ON M.MachineID=U.MachineID
+            LEFT JOIN Projects as P ON P.ProjectID=U.ProjectID
             WHERE P.CourseID = {argv[2]}
             GROUP BY M.MachineID, M.Hostname, M.IPAddress, P.CourseID
             ORDER BY M.MachineID DESC) as M1;
-        """
-
-    res = execute_command(db_connection, cursor, sql_command)
-    printRows(res[1])
+    '''
+    sql_test_4 = f'''
+    SELECT M.MachineID, M.Hostname, M.IPAddress, Count(M.MachineID) as useCount
+            FROM StudentUseMachinesInProject as U
+            LEFT JOIN Machines as M ON M.MachineID=U.MachineID
+            LEFT JOIN Projects as P ON P.ProjectID=U.ProjectID
+            WHERE P.CourseID = {argv[2]}
+            GROUP BY M.MachineID, M.Hostname, M.IPAddress, P.CourseID
+    '''
+    sql_test_5 = f'''
+    SELECT M1.MachineID, M1.Hostname, M1.IPAddress, 0
+        FROM Machines as M1
+        WHERE M1.MachineID NOT IN (
+            SELECT M2.MachineID
+            FROM StudentUseMachinesInProject as U2, Machines as M2, Projects as P2
+            WHERE M2.MachineID=U2.MachineID and P2.ProjectID=U2.ProjectID and P2.CourseID = {argv[2]}
+            GROUP BY M2.MachineID, M2.Hostname, M2.IPAddress, P2.CourseID
+        )
+    '''
+    sql_test_6 = f'''
+    SELECT M.MachineID, M.Hostname, M.IPAddress, Count(M.MachineID) as useCount
+            FROM StudentUseMachinesInProject as U
+            LEFT JOIN Machines as M ON M.MachineID=U.MachineID
+            LEFT JOIN Projects as P ON P.ProjectID=U.ProjectID
+            WHERE P.CourseID = {argv[2]}
+            GROUP BY M.MachineID, M.Hostname, M.IPAddress, P.CourseID
+    UNION
+    SELECT M1.MachineID, M1.Hostname, M1.IPAddress, 0
+        FROM Machines as M1
+        WHERE M1.MachineID NOT IN (
+            SELECT M2.MachineID
+            FROM StudentUseMachinesInProject as U2, Machines as M2, Projects as P2
+            WHERE M2.MachineID=U2.MachineID and P2.ProjectID=U2.ProjectID and P2.CourseID = {argv[2]}
+            GROUP BY M2.MachineID, M2.Hostname, M2.IPAddress, P2.CourseID
+        ) 
+    ORDER BY MachineID DESC; 
+    '''
+    # GROUP BY M.MachineID, M.Hostname, M.IPAddress, P.CourseID
+    test_round = False
+    if test_round:
+        test = execute_command(db_connection, cursor, sql_test_6)
+        printRows(test[1])
+    else:
+        res = execute_command(db_connection, cursor, sql_command)
+        printRows(res[1])

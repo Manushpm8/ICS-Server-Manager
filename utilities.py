@@ -71,6 +71,9 @@ def printRows(result):
     - arg: result table
     - returns:  None
     '''
-    for record in result:
-        formatted_record = ','.join(str(value) for value in record)
-        print(formatted_record)
+    if result == 'Fail':
+        print(result)
+    else:
+        for record in result:
+            formatted_record = ','.join(str(value) for value in record)
+            print(formatted_record)
