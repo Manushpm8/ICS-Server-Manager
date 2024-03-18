@@ -63,7 +63,7 @@ def listCourse(db_connection, cursor, argv): # task 8
     """
 
     res = execute_command(db_connection, cursor, sql_command)
-    printRows(res[1])
+    printRows(res)
 
 def activeStudent(db_connection, cursor, argv): # task 11
     '''
@@ -97,4 +97,4 @@ def activeStudent(db_connection, cursor, argv): # task 11
     """
 
     res = execute_command(db_connection, cursor, sql_command)
-    printRows(res[1])
+    printRows(res)

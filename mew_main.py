@@ -56,7 +56,7 @@ def popularCourse(db_connection, cursor, argv):  # task 9
         """
 
     res = execute_command(db_connection, cursor, sql_command)
-    printRows(res[1])
+    printRows(res)
 
 
 def machineUsage(db_connection, cursor, argv):  # task 12
@@ -152,7 +152,7 @@ def machineUsage(db_connection, cursor, argv):  # task 12
     test_round = False
     if test_round:
         test = execute_command(db_connection, cursor, sql_test_6)
-        printRows(test[1])
+        printRows(test)
     else:
         res = execute_command(db_connection, cursor, sql_command)
-        printRows(res[1])
+        printRows(res)

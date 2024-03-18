@@ -67,5 +67,5 @@ def adminEmails(db_connection, cursor, argv):  # task 10
             """
 
     res = execute_command(db_connection, cursor, sql_command)
-    printRows(res[1])
+    printRows(res)
 
