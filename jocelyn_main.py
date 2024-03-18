@@ -11,14 +11,20 @@ def insertStudent(db_connection, cursor, argv): #task 2
 
     sql_command = f"""
         INSERT INTO User (UCINetID, email, First, Middle, Last)
-        VALUES ('{argv[2]}', '{argv[3]}', '{argv[4]}', '{argv[5]}', '{argv[6]}')
-
-        INSERT INTO Student (UCINetID)
-        VALUES ('{argv[2]}')
+        VALUES (?, ?, ?, ?, ?)
     """
+    user_data = (argv[2], argv[3], argv[4], argv[5], argv[6])
+
     
-    res = execute_command(db_connection, cursor, sql_command)
-    print(res[0])
+    sql_student = f"""
+        INSERT INTO Student (UCINetID)
+        VALUES (?)
+    """
+    student_data = (argv[2],)
+    
+    res = execute_command(db_connection, cursor, sql_command, user_data)
+    res = execute_command(db_connection, cursor, sql_command, student_data)
+    print(res[0] and res2[0])
 
 def insertMachine(db_connection, cursor, argv): #task 5
     '''
@@ -30,10 +36,11 @@ def insertMachine(db_connection, cursor, argv): #task 5
     
     sql_command = f"""
         INSERT INTO Machine (MachineID, hostname, IPAddr, status)
-        VALUES ({argv[2]}, '{argv[3]}', '{argv[4]}', '{argv[5]}')
+        VALUES (?, ?, ?, ?)
     """
 
-    res = execute_command(db_connection, cursor, sql_command)
+    machine_data = (argv[2], argv[3], argv[4], argv[5])
+    res = execute_command(db_connection, cursor, sql_command, machine_data)
     print(res[0])
 
 def listCourse(db_connection, cursor, argv): # task 8
