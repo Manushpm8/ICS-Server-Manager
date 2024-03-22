@@ -15,9 +15,13 @@ def addEmail(db_connection, cursor, argv):  # task 3
                 VALUES ('{argv[2]}', '{argv[3]}');
             """
 
-    res = execute_command(db_connection, cursor, sql_command)
-    print(res[0])
+    email = execute_command(db_connection, cursor, sql_command)
+    email_inserted = email[2].rowcount > 0
 
+    if email_inserted and email[0] == "Success":
+        print("Success")
+    else:
+        print("Fail")
 
 def insertUse(db_connection, cursor, argv):  # task 6
     '''
@@ -28,14 +32,18 @@ def insertUse(db_connection, cursor, argv):  # task 6
     :return: Bool
     '''
     sql_command = f"""
-            INSERT INTO StudentUseMachinesInProject
-                (ProjectID, StudentUCINetID, MachineID, StartDate, EndDate)
-            VALUES ({argv[2]}, '{argv[3]}', {argv[4]}, '{argv[5]}', '{argv[6]}')
+            INSERT INTO StudentUse
+                (ProjectID, UCINetID, MachineID, StartDate, EndDate)
+            VALUES ({argv[2]}, '{argv[3]}', {argv[4]}, '{argv[5]}', '{argv[6]}');
         """
     
-    res = execute_command(db_connection, cursor, sql_command)
-    print(res[0])
+    use = execute_command(db_connection, cursor, sql_command)
+    use_inserted = use[2].rowcount > 0
 
+    if use_inserted and use[0] == "Success":
+        print("Success")
+    else:
+        print("Fail")
 
 def popularCourse(db_connection, cursor, argv):  # task 9
     '''
@@ -46,23 +54,29 @@ def popularCourse(db_connection, cursor, argv):  # task 9
     :return: Table - CourseId,title,studentCount
     '''
     sql_command = f"""
-        SELECT C.CourseID, C.Title, COUNT( DISTINCT S.StudentUCINetID) AS studentCount
-        FROM Courses as C
-        JOIN Projects as P ON P.CourseID = C.CourseID
-        JOIN StudentUseMachinesInProject as S ON S.ProjectID = P.ProjectID
-        GROUP BY C.CourseID, C.Title
-        ORDER BY studentCount DESC, C.CourseID
-        LIMIT {argv[2]};
+        SELECT 
+            C.CourseID, C.Title, COUNT(DISTINCT S.UCINetID) AS studentCount
+        FROM 
+            Course as C
+        JOIN 
+            Project as P ON P.CourseID = C.CourseID
+        JOIN 
+            StudentUse as S ON S.ProjectID = P.ProjectID
+        GROUP BY 
+            C.CourseID, C.Title
+        ORDER BY 
+            studentCount DESC, C.CourseID
+        LIMIT 
+            {argv[2]};
         """
 
     res = execute_command(db_connection, cursor, sql_command)
     printRows(res)
 
-
 def machineUsage(db_connection, cursor, argv):  # task 12
     '''
     Given a course id, count the number of usage of each machine in that course.  Each unique
-    record in the MachineUse table counts as one usage. Machines that are not used in the course
+    record in the MachineUse table counts as one usage. Machine that are not used in the course
     should have a count of 0 instead of NULL. Ordered by machineId descending.
 
     argv: courseID
@@ -70,36 +84,23 @@ def machineUsage(db_connection, cursor, argv):  # task 12
     '''
 
     sql_command = f"""
-        SELECT M.MachineID, M.Hostname, M.IPAddress, IFNULL(Count(M.MachineID), 0) as useCount
-            FROM StudentUseMachinesInProject as U
-            LEFT JOIN Machines as M ON M.MachineID=U.MachineID
-            LEFT JOIN Projects as P ON P.ProjectID=U.ProjectID
+        SELECT M.MachineID, M.Hostname, M.IPAddress, Count(M.MachineID) as useCount
+            FROM StudentUse as U
+            LEFT JOIN Machine as M ON M.MachineID=U.MachineID
+            LEFT JOIN Project as P ON P.ProjectID=U.ProjectID
             WHERE P.CourseID = {argv[2]}
             GROUP BY M.MachineID, M.Hostname, M.IPAddress, P.CourseID
         UNION
         SELECT M1.MachineID, M1.Hostname, M1.IPAddress, 0
-            FROM Machines as M1
+            FROM Machine as M1
             WHERE M1.MachineID NOT IN (
                 SELECT M2.MachineID
-                FROM StudentUseMachinesInProject as U2, Machines as M2, Projects as P2
+                FROM StudentUse as U2, Machine as M2, Project as P2
                 WHERE M2.MachineID=U2.MachineID and P2.ProjectID=U2.ProjectID and P2.CourseID = {argv[2]}
                 GROUP BY M2.MachineID, M2.Hostname, M2.IPAddress, P2.CourseID
             ) 
         ORDER BY MachineID DESC; 
         """
-    sql_test_1 = f'''
-    SELECT M.MachineID, M.Hostname, M.IPAddress, IFNULL(Count(M.MachineID), 0) as useCount
-            FROM StudentUseMachinesInProject as U
-            LEFT JOIN Machines as M ON M.MachineID=U.MachineID
-            LEFT JOIN Projects as P ON P.ProjectID=U.ProjectID
-            GROUP BY M.MachineID, M.Hostname, M.IPAddress, P.CourseID
-            ORDER BY M.MachineID DESC
-    '''
-    # GROUP BY M.MachineID, M.Hostname, M.IPAddress, P.CourseID
-    test_round = False
-    if test_round:
-        test = execute_command(db_connection, cursor, sql_test_1)
-        printRows(test)
-    else:
-        res = execute_command(db_connection, cursor, sql_command)
-        printRows(res)
+
+    res = execute_command(db_connection, cursor, sql_command)
+    printRows(res)
