@@ -30,7 +30,7 @@ def insertStudent(db_connection, cursor, argv): #task 2
     user = execute_command(db_connection, cursor, user_insert)
     user_inserted = user[2].rowcount > 0
 
-    if user_inserted and user[0] == "Success":
+    if user_inserted and user[0] == "Success" and (argv[3] != 'NULL'):
         execute_command(db_connection, cursor, email_insert)
         execute_command(db_connection, cursor, student_insert)
         print("Success")
