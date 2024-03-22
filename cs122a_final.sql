@@ -7,7 +7,8 @@ CREATE TABLE Users (
     UCINetID VARCHAR(20) PRIMARY KEY NOT NULL,
     FirstName VARCHAR(50),
     MiddleName VARCHAR(50),
-    LastName VARCHAR(50)
+    LastName VARCHAR(50),
+    PrimaryEmail VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE UserEmail (

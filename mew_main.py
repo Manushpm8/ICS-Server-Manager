@@ -95,28 +95,10 @@ def machineUsage(db_connection, cursor, argv):  # task 12
             GROUP BY M.MachineID, M.Hostname, M.IPAddress, P.CourseID
             ORDER BY M.MachineID DESC
     '''
-    sql_test_6 = f'''
-    SELECT M.MachineID, M.Hostname, M.IPAddress, Count(M.MachineID) as useCount
-            FROM StudentUseMachinesInProject as U
-            LEFT JOIN Machines as M ON M.MachineID=U.MachineID
-            LEFT JOIN Projects as P ON P.ProjectID=U.ProjectID
-            WHERE P.CourseID = {argv[2]}
-            GROUP BY M.MachineID, M.Hostname, M.IPAddress, P.CourseID
-    UNION
-    SELECT M1.MachineID, M1.Hostname, M1.IPAddress, 0
-        FROM Machines as M1
-        WHERE M1.MachineID NOT IN (
-            SELECT M2.MachineID
-            FROM StudentUseMachinesInProject as U2, Machines as M2, Projects as P2
-            WHERE M2.MachineID=U2.MachineID and P2.ProjectID=U2.ProjectID and P2.CourseID = {argv[2]}
-            GROUP BY M2.MachineID, M2.Hostname, M2.IPAddress, P2.CourseID
-        ) 
-    ORDER BY MachineID DESC; 
-    '''
     # GROUP BY M.MachineID, M.Hostname, M.IPAddress, P.CourseID
     test_round = False
     if test_round:
-        test = execute_command(db_connection, cursor, sql_test_6)
+        test = execute_command(db_connection, cursor, sql_test_1)
         printRows(test)
     else:
         res = execute_command(db_connection, cursor, sql_command)
