@@ -13,14 +13,9 @@ def deleteStudent(db_connection, cursor, argv):  # task 4
                 DELETE FROM User
                 WHERE UCINetID = '{argv[2]}';
             """
-    
-    delete = execute_command(db_connection, cursor, sql_command)
-    student_deleted = delete[2].rowcount > 0
 
-    if student_deleted and delete[0] == "Success":
-        print("Success")
-    else:
-        print("Fail")
+    result = execute_command(db_connection, cursor, sql_command)
+    print(result[0])
 
 def updateCourse(db_connection, cursor, argv):  # task 7
     '''
@@ -35,13 +30,8 @@ def updateCourse(db_connection, cursor, argv):  # task 7
                 WHERE CourseID = {argv[2]};
             """
 
-    update = execute_command(db_connection, cursor, sql_command)
-    course_updated = update[2].rowcount > 0
-
-    if course_updated and update[0] == "Success":
-        print("Success")
-    else:
-        print("Fail")
+    result = execute_command(db_connection, cursor, sql_command)
+    print(result[0])
 
 def adminEmails(db_connection, cursor, argv):  # task 10
     '''

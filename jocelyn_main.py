@@ -10,11 +10,8 @@ def insertStudent(db_connection, cursor, argv): #task 2
     '''
 
     user_insert = f"""
-        INSERT INTO User (UCINetID, FirstName, MiddleName, LastName)
+        INSERT INTO Users (UCINetID, FirstName, MiddleName, LastName)
         SELECT '{argv[2]}', '{argv[4]}', '{argv[5]}', '{argv[6]}'
-        WHERE NOT EXISTS (
-            SELECT 1 FROM User WHERE UCINetID = '{argv[2]}'
-        );
     """
 
     email_insert = f"""
@@ -28,9 +25,8 @@ def insertStudent(db_connection, cursor, argv): #task 2
     """
 
     user = execute_command(db_connection, cursor, user_insert)
-    user_inserted = user[2].rowcount > 0
 
-    if user_inserted and user[0] == "Success" and (argv[3] != 'NULL'):
+    if user[0] == "Success":
         execute_command(db_connection, cursor, email_insert)
         execute_command(db_connection, cursor, student_insert)
         print("Success")
@@ -47,19 +43,11 @@ def insertMachine(db_connection, cursor, argv): #task 5
     
     sql_command = f"""
         INSERT INTO Machine (MachineID, hostname, IPAddr, status)
-        SELECT '{argv[2]}', '{argv[3]}', '{argv[4]}', '{argv[5]}'
-        WHERE NOT EXISTS (
-            SELECT 1 FROM Machine WHERE MachineID = '{argv[2]}'
-        );
+        VALUES ({argv[2]}, {argv[3]}, {argv[4]}, {argv[5]});
     """
 
-    machine = execute_command(db_connection, cursor, sql_command)
-    machine_inserted = machine[2].rowcount > 0
-
-    if machine_inserted and machine[0] == "Success":
-        print("Success")
-    else:
-        print("Fail")
+    result = execute_command(db_connection, cursor, sql_command)
+    print(result[0])
 
 def listCourse(db_connection, cursor, argv): # task 8
     '''
