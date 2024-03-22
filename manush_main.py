@@ -1,7 +1,6 @@
 import sys
 from utilities import execute_command, printRows
 
-
 def deleteStudent(db_connection, cursor, argv):  # task 4
     '''
     Delete the student in both the User and Student table.
@@ -11,13 +10,17 @@ def deleteStudent(db_connection, cursor, argv):  # task 4
     '''
 
     sql_command = f"""
-                DELETE FROM users
+                DELETE FROM User
                 WHERE UCINetID = '{argv[2]}';
             """
     
-    res = execute_command(db_connection, cursor, sql_command)
-    print(res[0])
+    delete = execute_command(db_connection, cursor, sql_command)
+    student_deleted = delete[2].rowcount > 0
 
+    if student_deleted and delete[0] == "Success":
+        print("Success")
+    else:
+        print("Fail")
 
 def updateCourse(db_connection, cursor, argv):  # task 7
     '''
@@ -27,14 +30,18 @@ def updateCourse(db_connection, cursor, argv):  # task 7
     :return: Bool
     '''
     sql_command = f"""
-                UPDATE Courses
+                UPDATE Course
                 SET Title = '{argv[3]}'
                 WHERE CourseID = {argv[2]};
             """
 
-    res = execute_command(db_connection, cursor, sql_command)
-    print(res[0])
+    update = execute_command(db_connection, cursor, sql_command)
+    course_updated = update[2].rowcount > 0
 
+    if course_updated and update[0] == "Success":
+        print("Success")
+    else:
+        print("Fail")
 
 def adminEmails(db_connection, cursor, argv):  # task 10
     '''
@@ -45,27 +52,26 @@ def adminEmails(db_connection, cursor, argv):  # task 10
     '''
     sql_command = f"""
                 SELECT 
-                    Users.UCINetID,
-                    Users.FirstName,
-                    Users.MiddleName,
-                    Users.LastName,
+                    User.UCINetID,
+                    User.FirstName,
+                    User.MiddleName,
+                    User.LastName,
                     GROUP_CONCAT(UserEmail.Email ORDER BY UserEmail.Email ASC SEPARATOR ';') AS ListOfEmail
                 FROM 
-                    Administrators
+                    Administrator
                 INNER JOIN 
-                    AdministratorManageMachines ON Administrators.UCINetID = AdministratorManageMachines.AdministratorUCINetID
+                    AdministratorManageMachines ON Administrator.UCINetID = AdministratorManageMachines.AdministratorUCINetID
                 INNER JOIN 
-                    Users ON Administrators.UCINetID = Users.UCINetID
+                    User ON Administrator.UCINetID = User.UCINetID
                 INNER JOIN 
-                    UserEmail ON Users.UCINetID = UserEmail.UCINetID
+                    UserEmail ON User.UCINetID = UserEmail.UCINetID
                 WHERE 
                     AdministratorManageMachines.MachineID = {argv[2]}
                 GROUP BY 
-                    Users.UCINetID
+                    User.UCINetID
                 ORDER BY 
-                    Users.UCINetID ASC;
+                    User.UCINetID ASC;
             """
 
     res = execute_command(db_connection, cursor, sql_command)
     printRows(res)
-
