@@ -9,27 +9,33 @@ def insertStudent(db_connection, cursor, argv): #task 2
     return: bool
     '''
 
-    sql_command = f"""
-        INSERT INTO User (UCINetID, email, First, Middle, Last)
-        VALUES (?, ?, ?, ?, ?)
+    user_insert = f"""
+        INSERT INTO User (UCINetID, FirstName, MiddleName, LastName)
+        SELECT '{argv[2]}', '{argv[4]}', '{argv[5]}', '{argv[6]}'
+        WHERE NOT EXISTS (
+            SELECT 1 FROM User WHERE UCINetID = '{argv[2]}'
+        );
     """
-    user_data = (argv[2], argv[3], argv[4], argv[5], argv[6])
 
-    
-    sql_student = f"""
+    email_insert = f"""
+        INSERT INTO UserEmail (UCINetID, Email)
+        VALUES ('{argv[2]}', '{argv[3]}');
+    """
+
+    student_insert = f"""
         INSERT INTO Student (UCINetID)
-        VALUES (?)
+        VALUES ('{argv[2]}');
     """
-    student_data = (argv[2],)
 
-    try:
-        res_user = execute_command(db_connection, cursor, sql_command, user_data)
-        res_student = execute_command(db_connection, cursor, sql_command, student_data)
+    user = execute_command(db_connection, cursor, user_insert)
+    user_inserted = user[2].rowcount > 0
 
-        print(res_user[0] and res_student[0])
-
-    except Exception as e:
-        print(f"Error: {e}")
+    if user_inserted and user[0] == "Success":
+        execute_command(db_connection, cursor, email_insert)
+        execute_command(db_connection, cursor, student_insert)
+        print("Success")
+    else:
+        print("Fail")
 
 def insertMachine(db_connection, cursor, argv): #task 5
     '''
@@ -41,12 +47,19 @@ def insertMachine(db_connection, cursor, argv): #task 5
     
     sql_command = f"""
         INSERT INTO Machine (MachineID, hostname, IPAddr, status)
-        VALUES (?, ?, ?, ?)
+        SELECT '{argv[2]}', '{argv[3]}', '{argv[4]}', '{argv[5]}'
+        WHERE NOT EXISTS (
+            SELECT 1 FROM Machine WHERE MachineID = '{argv[2]}'
+        );
     """
 
-    machine_data = (argv[2], argv[3], argv[4], argv[5])
-    res = execute_command(db_connection, cursor, sql_command, machine_data)
-    print(res[0])
+    machine = execute_command(db_connection, cursor, sql_command)
+    machine_inserted = machine[2].rowcount > 0
+
+    if machine_inserted and machine[0] == "Success":
+        print("Success")
+    else:
+        print("Fail")
 
 def listCourse(db_connection, cursor, argv): # task 8
     '''
@@ -58,20 +71,15 @@ def listCourse(db_connection, cursor, argv): # task 8
     
     sql_command = f"""
         SELECT DISTINCT
-            c.CourseID, c.*
-            
+            c.CourseID, c.Title, c.Quarter    
         FROM
-            Student s, StudentUse u, Project p, Course c
-            
+            StudentUse su, Project p, Course c 
         WHERE
-            s.UCINetID = '{argv[2]}' and
-            s.UCINetID = u.UCINetID and
-            u.ProjectID = p.ProjectID and
+            su.UCINetID = '{argv[2]}' and
+            su.ProjectID = p.ProjectID and
             p.CourseID = c.CourseID
-            
         ORDER BY
-            c.CourseID ASC
-        
+            c.CourseID ASC;
     """
 
     res = execute_command(db_connection, cursor, sql_command)
@@ -88,24 +96,18 @@ def activeStudent(db_connection, cursor, argv): # task 11
     
     sql_command = f"""
         SELECT
-            s.UCINetID, s.*
-
-        FROM Student s, StudentUse u, Machine m
-        
+            u.UCINetID, u.FirstName, u.MiddleName, u.LastName
+        FROM 
+            StudentUse su, User u
         WHERE
-            s.UCINetID = u.UCINetID and 
-            u.MachineID = {argv[2]} and
-            u.MachineID = m.MachineID and
-            u.StartDate <= '{argv[4]}' and u.EndDate >= '{argv[5]}'
-            
+            su.MachineID = {argv[2]} and
+            su.StartDate >= '{argv[4]}' and
+            su.EndDate <= '{argv[5]}' and
+            su.UCINetID = u.UCINetID
         GROUP BY
-            s.UCINetID
-            
+            u.UCINetID
         HAVING
-            COUNT(*) > {argv[3]}
-            
-        ORDER BY
-            s.UCINetID ASC 
+            Count(*) >= {argv[3]}
     """
 
     res = execute_command(db_connection, cursor, sql_command)
