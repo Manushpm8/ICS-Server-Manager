@@ -60,7 +60,7 @@ def execute_command(db_connection, cursor, sql_command):
         return "Success", result
     except Exception as e:
         # print(e)
-        return "Fail", []
+        return 'Fail', []
     
 
 
@@ -72,7 +72,7 @@ def printRows(result):
     - returns:  None
     '''
     if result[0] == 'Fail':
-        print(result)
+        print(result[0])
     elif result[0] == 'Success':
         for record in result[1]:
             formatted_record = ','.join(str(value) for value in record)
