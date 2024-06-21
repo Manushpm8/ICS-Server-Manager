@@ -1,11 +1,31 @@
-# Homework 4, Part 1
+# ICS Server Manager
 
-This python project helps you set up your local environment to run and test your queries.
+This project is a command-line program to manage the computing servers in the ICS department. The program uses Python and MySQL to perform various database operations such as importing data, inserting records, updating records, and querying information. It helps you set up your local environment to run and test your queries.
 
-## Project Dependencies
-- Python Version: 3.9
+## Features
+
+- Import data from CSV files into the database
+- Insert new students, machines, and use records
+- Update course titles
+- Query unique courses attended by a student
+- List the most popular courses
+- Find emails of administrators for a given machine
+- Identify active students based on machine usage
+- Count machine usage for a given course
+
+## Prerequisites
+
+- Python 3.9
 - Required packages: in the requirements.txt
 - MySQL: make sure you have a MySQL server up and running on your machine
+- `mysql-connector-python` library
+
+## Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/yourusername/ICS_Server_Manager.git
+   cd ICS_Server_Manager
 
 ## Get Started
 
